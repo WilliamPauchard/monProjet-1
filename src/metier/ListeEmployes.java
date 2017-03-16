@@ -1,16 +1,19 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package metier;
 
 import base.EmployeDao;
 import domaine.Employe;
 
 /**
- * Liste d'Employes dans l'ordre des noms et prénoms avec une position courante
  *
- * @author Peter DAEHNE - HEG Genève
- * @version 2.0
+ * @author LKABOUSSE
  */
 public class ListeEmployes extends ListeObjects {
-  
+    
     /** Constructeur */
     public ListeEmployes () {liste = EmployeDao.getEmployes();}
 
@@ -19,5 +22,4 @@ public class ListeEmployes extends ListeObjects {
 
     /** Retourne l'employé d'indice k, null si k n'est pas correctement défini */
     public Employe getEmploye (int k) {return (Employe)super.get(k);}
-  
-} // ListeEmployes
+}

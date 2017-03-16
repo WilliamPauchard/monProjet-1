@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Module 634.1-Programmation - Contrôle continu du 13.04.2016
+ * 
  * Modélise la connexion à la base
  *
  * @author Peter DAEHNE - HEG Genève
@@ -12,7 +14,7 @@ import java.sql.SQLException;
  */
 public class ConnexionBase {
 
-    private static final String NOM_BASE = "EmplDept"; /* Nom de la base de données */
+    private static final String NOM_BASE = "WhatElse"; /* Nom de la base de données */
 
     private static Connection con = null; /* La connexion avec la base */
 

@@ -1,72 +1,50 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package base;
 
-import domaine.Departement;
 import domaine.Employe;
-import domaine.Fonction;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
+import java.sql.ResultSet;
 /**
- * Gestion des accès à la base de données pour l'entité Employe.
  *
- * @author Peter DAEHNE - HEG-Genève
- * @version Version 2.0
-*/
+ * @author LKABOUSSE
+ */
 public class EmployeDao {
-  
-    /** Retourne la liste complète des Employes dans l'ordre des nom et prénom, null en cas d'erreur */
-    public static ArrayList getEmployes () {
-        ArrayList liste = new ArrayList();
-        try {
+    
+    /* Récupération de tous les employés */
+    public static ArrayList getEmployes(){
+        ArrayList alstEmployes = new ArrayList();
+        try{
             Connection con = ConnexionBase.get();
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT NoEmpl, NomEmpl, PrenomEmpl, NoFonc, DateEmpl, NoDept FROM Employe ORDER BY NomEmpl, PrenomEmpl");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM employe ORDER BY Nom, Prenom");
             while (rs.next()) {
-                Fonction f = FonctionDao.getFonction(rs.getInt("NoFonc"));
-                Departement d = DepartementDao.getDepartement(rs.getInt("NoDept"));
-                Employe e = new Employe(rs.getInt("NoEmpl"), rs.getString("NomEmpl"), rs.getString("PrenomEmpl"), f, rs.getDate("DateEmpl"), d);
-                liste.add(e);
+                Employe e = new Employe(rs.getInt("Id"), rs.getString("Nom"), rs.getString("Prenom"));
+                alstEmployes.add(e);
             }
-            stmt.close();
+          stmt.close();
         }
         catch (SQLException e) {System.out.println("EmployeDao.getEmployes(): " + e.getMessage()); e.printStackTrace(); return null;}
-        return liste;
-    } // getEmployes
-
-    /** Supprime l'employé d'identifiant noEmpl */
-    public static void delEmploye (int noEmpl) {
-        try {
+        return alstEmployes;
+    }//getEmployes
+    
+    /* Récupération d'un employé */
+    public static Employe getEmploye(int idEmp){
+        try{
             Connection con = ConnexionBase.get();
             Statement stmt = con.createStatement();
-            stmt.executeUpdate("DELETE FROM Employe WHERE NoEmpl = " + noEmpl);
+            ResultSet rs = stmt.executeQuery("SELECT * FROM employe WHERE Id = " + idEmp);
+            rs.next();
+            Employe e = new Employe(rs.getInt("Id"), rs.getString("Nom"), rs.getString("Prenom"));
             stmt.close();
-        }
-        catch (SQLException e) {System.out.println("EmployeDao.delEmploye(): " + e.getMessage()); e.printStackTrace();}
-    } // delEmploye
-
-    /** Ajoute l'employé emp et retourne l'identifiant qui lui a été attribué automatiquement */
-    public static int addEmploye (Employe emp) {
-        int id = -1;
-        try {
-            Connection con = ConnexionBase.get();
-            PreparedStatement stmt = con.prepareStatement("INSERT INTO Employe (NomEmpl, PrenomEmpl, NoFonc, DateEmpl, NoDept) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, emp.getNomEmpl());
-            stmt.setString(2, emp.getPrenomEmpl());
-            stmt.setInt(3, emp.getFonction().getNoFonc());
-            stmt.setDate(4, new Date(emp.getDateEmpl().getTime()));
-            stmt.setInt(5, emp.getDepartement().getNoDept());
-            stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            rs.next(); id = rs.getInt(1);
-            stmt.close();
-        }
-        catch (SQLException e) {System.out.println("EmployeDao.addEmploye(): " + e.getMessage()); e.printStackTrace();}
-        return id;
-    } // addEmploye
-  
-} // EmployeDao
+            return e;
+        } catch (SQLException e) {System.out.println("EmployeDao.getEmploye(): " + e.getMessage()); e.printStackTrace(); return null;}
+    }//getEmploye
+    
+}

@@ -1,3 +1,6 @@
+/*****************************************************/
+/* VOUS N'AVEZ PAS LE DROIT DE MODIFIER CETTE CLASSE */
+/*****************************************************/
 package metier;
 
 import java.util.ArrayList;
@@ -67,4 +70,4 @@ abstract class ListeObjects {
         return liste.get(k);
     } // get
 
-} //ListeObjects
+} // ListeObjects
