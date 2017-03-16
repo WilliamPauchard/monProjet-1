@@ -1,6 +1,6 @@
 package base;
 
-import outils.Outils;
+import base.mysql.Outils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -8,13 +8,14 @@ import java.sql.SQLException;
  * Modélise la connexion à la base
  *
  * @author Peter DAEHNE - HEG Genève
- * @version 1.1
+ * @version 2.0
  */
-public class ConnectionBase {
+public class ConnexionBase {
 
     private static final String NOM_BASE = "EmplDept"; /* Nom de la base de données */
+
     private static Connection con = null; /* La connexion avec la base */
-  
+
     /* Établit la connexion et affecte con. */
     private static void connect () {
         try {con = Outils.connect(NOM_BASE);}

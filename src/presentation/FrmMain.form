@@ -124,6 +124,9 @@
   </Layout>
   <SubComponents>
     <Component class="java.awt.List" name="lstEmployes">
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="lstEmployesItemStateChanged"/>
+      </Events>
     </Component>
     <Component class="java.awt.Label" name="label1">
       <Properties>
@@ -136,7 +139,7 @@
     </Component>
     <Component class="java.awt.TextField" name="tfNom">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label2">
@@ -150,7 +153,7 @@
     </Component>
     <Component class="java.awt.TextField" name="tfPrenom">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label3">
@@ -164,7 +167,7 @@
     </Component>
     <Component class="java.awt.TextField" name="tfDateEngagement">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label4">
@@ -178,7 +181,7 @@
     </Component>
     <Component class="java.awt.TextField" name="tfFonction">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label5">
@@ -192,7 +195,7 @@
     </Component>
     <Component class="java.awt.TextField" name="tfDepartement">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Label" name="label6">
@@ -206,18 +209,24 @@
     </Component>
     <Component class="java.awt.TextField" name="tfLieu">
       <Properties>
-        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="java.awt.Button" name="btnSupprimer">
       <Properties>
         <Property name="label" type="java.lang.String" value="Supprimer"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSupprimerActionPerformed"/>
+      </Events>
     </Component>
     <Component class="java.awt.Button" name="btnNouveau">
       <Properties>
         <Property name="label" type="java.lang.String" value="Nouveau ..."/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnNouveauActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

@@ -1,27 +1,33 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package domaine;
 
-/**
+/** 
+ * Entité représentant un Departement
  *
- * @author LKABOUSSE
+ * @author Peter DAEHNE - HEG Genève
+ * @version 2.0
  */
 public class Departement {
-    private int noDept; /* Numéro du département */
-    private String nomDept; /* Nom du département */
-    private Lieu noLieu; /* Numéro du Lieu */
-    
-    public Departement (int noDept, String nomDept, Lieu noLieu) {
-        this.noDept=noDept;
-        this.nomDept=nomDept;
-        this.noLieu=noLieu;
-    };
-   
-    public int getNoDept(){return noDept;}
-    public String getNomDept() {return nomDept; }
-    public Lieu getNoLieu() { return noLieu; }
-    
-}
+
+    /* Attributs */
+    private int noDept; /* Identifiant */
+    private String nomDept;
+    private Lieu lieu;
+
+    /* Accesseurs */
+    public int getNoDept () {return noDept;}
+    public void setNomDept (String nomDept) {this.nomDept = nomDept;}
+    public String getNomDept () {return nomDept;}
+    public Lieu getLieu () {return lieu;}
+    public void setLieu (Lieu lieu) {this.lieu = lieu;}
+
+    /* Constructeur */
+    public Departement (int noDept, String nomDept, Lieu lieu) {
+        this.noDept = noDept;
+        this.nomDept = nomDept;
+        this.lieu = lieu;
+    } // Constructeur
+
+    public boolean equals (Object o) {return noDept == ((Departement)o).noDept;}
+    public String toString () {return "[NoDept=" + noDept + " ; NomDept=\"" + nomDept + "\" ; Lieu=" + lieu + "]";}
+
+} // Departement

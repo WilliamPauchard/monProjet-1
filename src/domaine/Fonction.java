@@ -1,25 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package domaine;
 
-/**
+/** 
+ * Entité représentant une Fonction
  *
- * @author LKABOUSSE
+ * @author Peter DAEHNE - HEG Genève
+ * @version 2.0
  */
 public class Fonction {
-    
-    private int noFonc; /* Numéro de la fonction */
-    private String nomFonc; /* Nom de la fonction */
-    
+
+    /* Attributs */
+    private int noFonc; /* Identifiant */
+    private String nomFonc;
+
+    /* Accesseurs */
+    public int getNoFonc () {return noFonc;}
+    public void setNomFonc (String nomFonc) {this.nomFonc = nomFonc;}
+    public String getNomFonc () {return nomFonc;}
+
+    /* Constructeur */
     public Fonction (int noFonc, String nomFonc) {
-        this.noFonc=noFonc;
-        this.nomFonc=nomFonc;
-    }
-    
-    public int getNoFonc(){return noFonc;}
-    public String getNomFonc() {return nomFonc; }
-    
-}
+        this.noFonc = noFonc;
+        this.nomFonc = nomFonc;
+    } // Constructeur
+
+    public boolean equals (Object o) {return noFonc == ((Fonction)o).noFonc;}
+    public String toString () {return "[NoFonc=" + noFonc + " ; NomFonc=\"" + nomFonc + "\"]";}
+
+} // Fonction
