@@ -7,6 +7,4 @@ COMMENT L'UTILISER ?
 
 2. Ouvrir Wamp (ou autre serveur dédié) et ajouter la base de données MYSQL donné.
 
-3. Ouvrir l'application via NetBean
-
-P.S. Ceci est un remplacement de l'ancienne source par la correction de l'enseignant de programmation.
+3. Ouvrir l'application via NetBeans
