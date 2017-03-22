@@ -1,86 +1,89 @@
 package presentation;
 
+import base.CommandeDao;
+import base.ConnexionBase;
 import domaine.Commande;
 import domaine.Employe;
 import java.text.DecimalFormat;
-import metier.ListeEmployes;
 import metier.ListeCommandes;
+import metier.ListeEmployes;
 
 /**
- * 634.1 - Programmation - TP P02
- *
+ * Module 634.1-Programmation - TP P02
+ * 
  * Application de gestion des commandes de capsules de café.
- *
+ * 
  * Écran principal
  *
- * @author LKABOUSSE
- * @version 1.0
+ * @author Peter DAEHNE - HEG Genève
+ * @version 2.1
  */
-public final class FrmMain extends java.awt.Frame {
-
-    private ListeEmployes listeEmployes; 
-    private ListeCommandes listeCommandes;
+public class FrmMain extends java.awt.Frame {
+  
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.00 CHF");
-    private static final String LBL_COMMANDEDE = "Commande de ";
-    /**
-     * Constructeur
-     */
-    public FrmMain() {
+    private static final String COMMANDES_DE = "Commandes de ";
+    private static final String AUCUNE = "<Aucune>";
+
+    private ListeEmployes listeEmployes;   /* Modèle pour la liste des employés */
+    private ListeCommandes listeCommandes; /* Modèle pour la liste des commandes */
+
+    /** Constructeur */
+    public FrmMain () {
         initComponents();
         chargerEmployes();
-        lstEmployes.select(0);
-        listeEmployes.setPos(0);
-        afficherCommandes();
-        prixTotal();
-        chargerLabel();
     } // Constructeur
 
-    private void chargerEmployes() {
+    /* Sélection d'un employé: chargement de ses commandes. */
+    private void selectEmploye (int pos) {
+        listeEmployes.setPos(pos); lstEmployes.select(pos);
+        Employe e = listeEmployes.getEmployeCourant();
+        lblCommandes.setText(COMMANDES_DE + e);
+        chargerCommandes(e);
+    } // selectEmploye
+
+    /* Chargement des employés dans l'ordre des nom et prenom et sélection du premier */
+    private void chargerEmployes () {
         listeEmployes = new ListeEmployes();
-        for (int i = 0; i < listeEmployes.size(); i++) {
-            Employe e = (Employe) listeEmployes.getEmploye(i);
-            lstEmployes.add(e.getNom() + " " + e.getPrenom());
-        }
-    }//chargerEmployes
+        for (int k = 0; k < listeEmployes.size(); k++) {lstEmployes.add(listeEmployes.getEmploye(k).toString());}
+        selectEmploye(0);
+    } // chargerEmployes
     
-    /* Chargement du label dédié à l'employé sélectionné */
-    public void chargerLabel(){
-        int indexEmploye = lstEmployes.getSelectedIndex();
-        listeEmployes.setPos(indexEmploye);
-        String nomPrenom = listeEmployes.getEmployeCourant().toString();
-        lblCommandes.setText(LBL_COMMANDEDE + nomPrenom);
-    }//chargerLabel
-    
-    /* Affichage des commandes sur la base de la liste des employés */
-    public void afficherCommandes(){
+    /* Retourne la somme représentée par les commandes du modèle (listeCommandes) */
+    private double sommeCommandes () {
+        double somme = 0;
+        for (int k = 0; k < listeCommandes.size(); k++) {somme += listeCommandes.getCommande(k).getPrix();}
+        return somme;
+    } // sommeCommandes
+
+    /* Actualisation de la vue représentant les commandes (lstCommandes & somme) */
+    private void actualiserVueCommandes () {
         lstCommandes.removeAll();
-        int indexEmploye = lstEmployes.getSelectedIndex();
-        Employe e = (Employe)listeEmployes.getEmploye(indexEmploye);
-        listeCommandes = new ListeCommandes(e);
-        for (int i = 0; i < listeCommandes.size(); i++) {
-            Commande comm = (Commande)listeCommandes.getCommande(i);
-            lstCommandes.add(comm.toString());
-            prixTotal();
-        }
         if (listeCommandes.size() == 0) {
-            lstCommandes.add("<aucune>");
+            lstCommandes.add(AUCUNE);
+        } else {
+            for (int k = 0; k < listeCommandes.size(); k++) {lstCommandes.add(listeCommandes.getCommande(k).toString());}
         }
-    }//afficherCommandes
+        tfTotal.setText(FORMAT.format(sommeCommandes()));
+    } // actualiserVueCommandes
     
-    /* Calcul du prix total de la commande de chaque employé */
-    private void prixTotal(){
-        double prix = 0;
-        for (int i = 0; i < listeCommandes.size(); i++) {
-            Commande comm = (Commande)listeCommandes.getCommande(i);
-            prix = prix + comm.getPrix();
+    /* Chargement des commandes pour l'employé emp */
+    private void chargerCommandes (Employe emp) {
+        listeCommandes = new ListeCommandes(emp);
+        actualiserVueCommandes();
+    } // chargerCommandes
+
+    /** Enregistrer la nouvelle commande */
+    public void enregistreCommande (Commande commande) {
+        CommandeDao.enregistreCommande(commande);
+        if (commande.getEmploye().equals(listeEmployes.getEmployeCourant())) {
+            listeCommandes.add(commande);
+            actualiserVueCommandes();
         }
-        tfTotal.setText(FORMAT.format(prix));
-    }//prixTotal
-    
+    } // enregistreCommande
+
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method
+     * is always regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -173,6 +176,7 @@ public final class FrmMain extends java.awt.Frame {
 
     /* Fermeture de la fenêtre */
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        ConnexionBase.close();
         System.exit(0);
     }//GEN-LAST:event_formWindowClosed
 
@@ -180,14 +184,16 @@ public final class FrmMain extends java.awt.Frame {
         dispose();
     }//GEN-LAST:event_formWindowClosing
 
+    /* Un employé a été sélectionné */
     private void lstEmployesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_lstEmployesItemStateChanged
-        chargerLabel();
-        afficherCommandes();
-        prixTotal();
+        selectEmploye(lstEmployes.getSelectedIndex());
     }//GEN-LAST:event_lstEmployesItemStateChanged
 
+    /* L'utilisateur a demandé à compléter la commande pour l'employé sélectionné */
     private void btnCompleterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleterActionPerformed
-        FrmNouvelleCommande.getInstance(this, listeEmployes.getEmployeCourant()).setVisible(true);
+        FrmNouvelleCommande frmNouvelleCommande = FrmNouvelleCommande.getInstance(this);
+        frmNouvelleCommande.setVisible(true);
+        frmNouvelleCommande.setEmploye(listeEmployes.getEmployeCourant());
     }//GEN-LAST:event_btnCompleterActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

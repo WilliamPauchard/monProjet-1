@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package base;
 
 import domaine.Capsule;
@@ -13,41 +8,45 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
+ * Module 634.1-Programmation - TP P02
+ * 
+ * Gestion des accès à la base de données pour l'entité Capsule.
  *
- * @author LKABOUSSE
- */
+ * @author Peter DAEHNE - HEG-Genève
+ * @version 2.1
+*/
 public class CapsuleDao {
-
-    /* Récupération de toutes les capsules */
-    public static ArrayList getCapsules() {
-        ArrayList alstCapsules = new ArrayList();
+  
+    /** Retourne la capsule d'identifiant id */
+    public static Capsule getCapsule (int id) {
+        Capsule capsule = null;
         try {
             Connection con = ConnexionBase.get();
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM capsule ORDER BY Nom");
+            ResultSet rs = stmt.executeQuery("SELECT Id, Nom, Prix FROM Capsule WHERE Id = " + id);
+            rs.next(); /* La base de données est intègre ! */
+            capsule = new Capsule(rs.getInt("Id"), rs.getString("Nom"), rs.getDouble("Prix"));
+            stmt.close();
+        }
+        catch (SQLException e) {System.out.println("CapsuleDao.getCapsule(): " + e.getMessage()); e.printStackTrace(); return null;}
+        return capsule;
+    } // getCapsule
+
+    /** Retourne la liste complète des capsules, dans l'ordre des noms. */
+    public static ArrayList getListeCapsules () {
+        ArrayList liste = new ArrayList();
+        try {
+            Connection con = ConnexionBase.get();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT Id, Nom, Prix FROM Capsule ORDER BY Nom");
             while (rs.next()) {
-                int id = rs.getInt("Id");
-                String nom = rs.getString("Nom");
-                double prix = rs.getDouble("Prix");
-                Capsule caps = new Capsule(id, nom, prix);
-                alstCapsules.add(caps);
+                Capsule capsule = new Capsule(rs.getInt("Id"), rs.getString("Nom"), rs.getDouble("Prix"));
+                liste.add(capsule);
             }
             stmt.close();
         }
-        catch (SQLException e) {System.out.println("CapsuleDao.getCapsules(): " + e.getMessage()); e.printStackTrace(); return null;}
-        return alstCapsules;
-    }//getCapsules
-    
-    /* Récupération de la capsule courante*/
-    public static Capsule getCapsule(int noCap){
-        try{
-            Connection con = ConnexionBase.get();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM capsule WHERE Id = " + noCap);
-            rs.next();
-            Capsule c = new Capsule(rs.getInt("Id"), rs.getString("Nom"), rs.getDouble("Prix"));
-            stmt.close();
-            return c;
-        } catch (SQLException e) {System.out.println("CapsuleDao.getCapsule(): " + e.getMessage()); e.printStackTrace(); return null;}
-    }//getCapsule
-}
+        catch (SQLException e) {System.out.println("CapsuleDao.getListeCapsules(): " + e.getMessage()); e.printStackTrace(); return null;}
+        return liste;
+    } // getListeCapsules
+
+} // CapsuleDao

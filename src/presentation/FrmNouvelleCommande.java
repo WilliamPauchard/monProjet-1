@@ -1,80 +1,57 @@
 package presentation;
 
-import base.CommandeDao;
-import domaine.Capsule;
 import domaine.Commande;
 import domaine.Employe;
-import java.util.Calendar;
 import metier.ListeCapsules;
 import outils.Validation;
 
 /**
- * 634.1 - Programmation - TP P02
+ * Module 634.1-Programmation - TP P02
  * 
  * Enregistrement d'une nouvelle commande pour un employé: Singleton
  * 
- * @author LKABOUSSE
- * @version 1.0
+ * @author Peter DAEHNE - HEG Genève
+ * @version 2.1
  */
 public class FrmNouvelleCommande extends java.awt.Frame {
-    
-    private static FrmNouvelleCommande instance;
-    private static FrmMain frmMain;
-    private static Employe employe;
-    //private static final String LBL_COMMANDEPOUR = "Commande pour ";
-    private ListeCapsules listeCapsules;
-    
+  
+    private static final String COMMANDE_POUR = "Compléter la commande de ";
+
+    private static FrmNouvelleCommande instance = new FrmNouvelleCommande(); /* L'unique instance */
+    private static FrmMain frmMain; /* L'instance de la fenêtre principale */
+
+    private ListeCapsules listeCapsules; /* Modèles pour la liste des capsules */
+    private Employe employe; /* L'employé pour lequel on effectue la nouvelle commande */
+
     /* Constructeur */
     private FrmNouvelleCommande () {
         initComponents();
         chargerCapsules();
-        chargerLabel();
-        etatLabelsEtBoutons();
-        lstCapsules.select(0);
-    } //Constructeur
-    
-    public static FrmNouvelleCommande getInstance (FrmMain frm, Employe e) {
-        if (instance == null) {frmMain = frm;  instance = new FrmNouvelleCommande();}
-        employe = e; 
+    } // Constructeur
+
+    /** Retour de l'unique instance */
+    public static FrmNouvelleCommande getInstance (FrmMain f) {
+        frmMain = f;
         return instance;
-    } //getInstance
-    
-    /* Chargement des capsules dans la liste */
-    private void chargerCapsules(){
+    } // getInstance
+
+    /** Définition de l'employé pour lequel on effectue la commande */
+    public void setEmploye (Employe e) {
+        employe = e;
+        lblEmploye.setText(COMMANDE_POUR + e.toString());
+        selectCapsule(0);
+        tfNombre.setText("0"); lblErreur.setVisible(true);
+    } // setEmploye
+
+    /* Sélection de la capsule d'indice pos */
+    private void selectCapsule (int pos) {listeCapsules.setPos(pos); lstCapsules.select(pos);}
+
+    /* Chargement de la liste des capsules dans l'ordre des noms */
+    private void chargerCapsules () {
         listeCapsules = new ListeCapsules();
-        for (int i = 0; i < listeCapsules.size(); i++) {
-            Capsule caps = (Capsule)listeCapsules.getCapsule(i);
-            lstCapsules.add(caps.toString());
-        }
-    }//chargerCapsules
-    
-    /* Chargement du label de l'employé concerné : Erreur de type NullPointerException */
-    private void chargerLabel(){
-        //lblEmploye.setText(LBL_COMMANDEPOUR + employe.getNom());
-    }//chargerLabel
-    
-    /* Gestion du label d'erreur et du bouton "Enregistrer" */
-    private void etatLabelsEtBoutons(){
-        boolean nbCapsules = Validation.isIntValid(tfNombre.getText());
-         if (nbCapsules && Integer.parseInt(tfNombre.getText()) > 0) {
-            lblErreur.setVisible(false);
-            btnEnregistrer.setEnabled(true);
-        }else{
-            lblErreur.setVisible(true);
-            btnEnregistrer.setEnabled(false);
-        }
-    }//etatLabelsEtBoutons
-    
-    /* Ajout de la commande */
-    private void ajouterCommande(){
-        Capsule caps = (Capsule)listeCapsules.getCapsule(lstCapsules.getSelectedIndex());
-        int nombre = Integer.parseInt(tfNombre.getText());
-        java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-        Commande comm = new Commande(employe, caps, nombre, date);
-        CommandeDao.addCommande(comm);
-        instance.dispose();
-        frmMain.afficherCommandes();
-    }//ajouterCommande
+        for (int k = 0; k < listeCapsules.size(); k++) {lstCapsules.add(listeCapsules.getCapsule(k).toString());}
+        selectCapsule(0);
+    } // chargerCapsules
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method
@@ -98,6 +75,12 @@ public class FrmNouvelleCommande extends java.awt.Frame {
         });
 
         lblEmploye.setText("Commande pour ...");
+
+        lstCapsules.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                lstCapsulesItemStateChanged(evt);
+            }
+        });
 
         lblNombre.setText("Nombre de capsules");
 
@@ -164,16 +147,27 @@ public class FrmNouvelleCommande extends java.awt.Frame {
 
     /* Fermeture de la fenêtre */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        instance.dispose();
+        dispose();
     }//GEN-LAST:event_formWindowClosing
 
+    /* La valeur saisie a changé */
     private void tfNombreTextValueChanged(java.awt.event.TextEvent evt) {//GEN-FIRST:event_tfNombreTextValueChanged
-        etatLabelsEtBoutons();
+        String strSaisi = tfNombre.getText();
+        boolean valide = Validation.isIntValid(strSaisi) && Integer.parseInt(strSaisi) > 0;
+        btnEnregistrer.setEnabled(valide); lblErreur.setVisible(!valide);
     }//GEN-LAST:event_tfNombreTextValueChanged
 
+    /* L'utilisateur a choisi d'enregistrer la commande */
     private void btnEnregistrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnregistrerActionPerformed
-        ajouterCommande();
+        Commande commande = new Commande(employe, listeCapsules.getCapsuleCourante(), Integer.parseInt(tfNombre.getText()));
+        frmMain.enregistreCommande(commande);
+        dispose();
     }//GEN-LAST:event_btnEnregistrerActionPerformed
+
+    /* L'utilisateur a changé la sélection de la capsule */
+    private void lstCapsulesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_lstCapsulesItemStateChanged
+        selectCapsule(lstCapsules.getSelectedIndex());
+    }//GEN-LAST:event_lstCapsulesItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button btnEnregistrer;

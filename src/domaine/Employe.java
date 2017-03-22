@@ -1,17 +1,12 @@
-/*******************************************************/
-/* VOUS NE DEVEZ EN PRINCIPE PAS MODIFIER CETTE CLASSE */
-/* Si vous le faites, indiquez vos nom et prénom dans  */
-/* l'entête ci-dessous.                                */
-/*******************************************************/
 package domaine;
 
 /**
- * 634.1 - Programmation - TP P02
+ * Module 634.1-Programmation - TP P02
  * 
  * Représentation d'un employé
  *
  * @author Peter DAEHNE - HEG Genève
- * @version 1.0
+ * @version 2.1
  */
 public class Employe {
 

@@ -1,50 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package base;
 
 import domaine.Employe;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.sql.ResultSet;
+
 /**
+ * Module 634.1-Programmation - TP P02
+ * 
+ * Gestion des accès à la base de données pour l'entité Employe.
  *
- * @author LKABOUSSE
- */
+ * @author Peter DAEHNE - HEG-Genève
+ * @version 2.1
+*/
 public class EmployeDao {
-    
-    /* Récupération de tous les employés */
-    public static ArrayList getEmployes(){
-        ArrayList alstEmployes = new ArrayList();
-        try{
+  
+    /** Retourne la liste des employés, dans l'ordre des nom et prénom. */
+    public static ArrayList getListeEmployes () {
+        ArrayList liste = new ArrayList();
+        try {
             Connection con = ConnexionBase.get();
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM employe ORDER BY Nom, Prenom");
+            ResultSet rs = stmt.executeQuery("SELECT Id, Nom, Prenom FROM Employe ORDER BY Nom, Prenom");
             while (rs.next()) {
-                Employe e = new Employe(rs.getInt("Id"), rs.getString("Nom"), rs.getString("Prenom"));
-                alstEmployes.add(e);
+                Employe employe = new Employe(rs.getInt("Id"), rs.getString("Nom"), rs.getString("Prenom"));
+                liste.add(employe);
             }
-          stmt.close();
-        }
-        catch (SQLException e) {System.out.println("EmployeDao.getEmployes(): " + e.getMessage()); e.printStackTrace(); return null;}
-        return alstEmployes;
-    }//getEmployes
-    
-    /* Récupération d'un employé */
-    public static Employe getEmploye(int idEmp){
-        try{
-            Connection con = ConnexionBase.get();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM employe WHERE Id = " + idEmp);
-            rs.next();
-            Employe e = new Employe(rs.getInt("Id"), rs.getString("Nom"), rs.getString("Prenom"));
             stmt.close();
-            return e;
-        } catch (SQLException e) {System.out.println("EmployeDao.getEmploye(): " + e.getMessage()); e.printStackTrace(); return null;}
-    }//getEmploye
-    
-}
+        }
+        catch (SQLException e) {System.out.println("EmployeDao.getListeEmployes(): " + e.getMessage()); e.printStackTrace(); return null;}
+        return liste;
+    } // getListeEmployes
+  
+} // EmployeDao

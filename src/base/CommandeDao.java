@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package base;
 
 import domaine.Capsule;
@@ -15,62 +10,60 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-/**
- *
- * @author LKABOUSSE
- */
-public class CommandeDao {
+import java.util.Calendar;
 
-    /* Récupération de toutes les commandes */
-    public static ArrayList getCommandes(Employe empl){
-        ArrayList alstCommandes = new ArrayList();
+/**
+ * Module 634.1-Programmation - TP P02
+ * 
+ * Gestion des accès à la base de données pour l'entité Commande.
+ *
+ * @author Peter DAEHNE - HEG-Genève
+ * @version 2.1
+*/
+public class CommandeDao {
+  
+    private static final Calendar CAL = Calendar.getInstance();
+
+    /** Retourne la liste des commandes pour l'employé emp, les commandes sont regroupées par capsule. */
+    public static ArrayList getListeCommandes (Employe emp) {
+        ArrayList liste = new ArrayList();
         try {
             Connection con = ConnexionBase.get();
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM commande WHERE IdEmploye = " + empl.getId());
-            while (rs.next()) {                
-                Employe emp = EmployeDao.getEmploye(rs.getInt("IdEmploye"));
-                Capsule cap = CapsuleDao.getCapsule(rs.getInt("IdCapsule"));
-                Commande comm = new Commande(emp, cap, rs.getInt("Nombre"), rs.getDate("Date"));
-                alstCommandes.add(comm);
+            ResultSet rs = stmt.executeQuery("SELECT IdCapsule, Nombre FROM Commande WHERE IdEmploye = " + emp.getId() + " ORDER BY IdCapsule");
+            if (rs.next()) {
+                int idCapsule = rs.getInt("IdCapsule"); int nombreTotal = rs.getInt("Nombre");
+                Capsule capsule = CapsuleDao.getCapsule(idCapsule);
+                while (rs.next()) {
+                    int idC = rs.getInt("IdCapsule"); int nb = rs.getInt("Nombre");
+                    if (idC == idCapsule) {
+                        nombreTotal += nb;
+                    } else {
+                        liste.add(new Commande(emp, capsule, nombreTotal));
+                        idCapsule = idC; nombreTotal = nb;
+                        capsule = CapsuleDao.getCapsule(idCapsule);
+                    }
+                }
+                liste.add(new Commande(emp, capsule, nombreTotal));
             }
             stmt.close();
         }
-        catch (SQLException e) {System.out.println("CommandeDao.getCommandes(): " + e.getMessage()); e.printStackTrace(); return null;}
-        return alstCommandes;
-    }
-    
-    /* Récupération de la commande courante*/
-    public static Commande getCommande(int idCom){
-         try{
-            Connection con = ConnexionBase.get();
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM commande WHERE Id = " + idCom);
-            rs.next();
-            Employe emp = EmployeDao.getEmploye(rs.getInt("IdEmploye"));
-            Capsule cap = CapsuleDao.getCapsule(rs.getInt("IdCapsule"));
-            Commande c = new Commande(emp, cap, rs.getInt("Nombre"), rs.getDate("Date"));
-            stmt.close();
-            return c;
-        } catch (SQLException e) {System.out.println("CommandeDao.getCommande(): " + e.getMessage()); e.printStackTrace(); return null;}
-    }
-    
-    /* Insertion de la commande dans la base de données */
-    public static int addCommande(Commande comm){
-        int id = -1;
+        catch (SQLException e) {System.out.println("CommandeDao.getListeCommandes(): " + e.getMessage()); e.printStackTrace(); return null;}
+        return liste;
+    } // getListeCommandes
+
+    /** Enregistre la commande */
+    public static void enregistreCommande (Commande commande) {
         try {
             Connection con = ConnexionBase.get();
-            PreparedStatement stmt = con.prepareStatement("INSERT INTO commande (IdEmploye, IdCapsule, Nombre, Date) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, comm.getEmploye().getId());
-            stmt.setInt(2, comm.getCapsule().getId());
-            stmt.setInt(3, comm.getNombre());
-            stmt.setDate(4, new Date(comm.getDate().getTime()));
+            String sql = "INSERT INTO Commande (IdEmploye, IdCapsule, Nombre, Date) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, commande.getEmploye().getId()); stmt.setInt(2, commande.getCapsule().getId());
+            stmt.setInt(3, commande.getNombre()); stmt.setDate(4, new Date(CAL.getTimeInMillis()));
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            rs.next(); id = rs.getInt(1);
             stmt.close();
         }
-        catch (SQLException e) {System.out.println("CommandeDao.addCommande(): " + e.getMessage()); e.printStackTrace();}
-        return id;
-    }//addCommande
-}//CommandeDao
+        catch (SQLException e) {System.out.println("CommandeDao.enregistreCommande(): " + e.getMessage()); e.printStackTrace();}
+    } // enregistreCommande
+  
+} // CommandeDao

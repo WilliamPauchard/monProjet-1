@@ -82,6 +82,9 @@
       </Properties>
     </Component>
     <Component class="java.awt.List" name="lstCapsules">
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="lstCapsulesItemStateChanged"/>
+      </Events>
     </Component>
     <Component class="java.awt.Label" name="lblNombre">
       <Properties>

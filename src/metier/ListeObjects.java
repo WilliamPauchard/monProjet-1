@@ -1,6 +1,3 @@
-/*****************************************************/
-/* VOUS N'AVEZ PAS LE DROIT DE MODIFIER CETTE CLASSE */
-/*****************************************************/
 package metier;
 
 import java.util.ArrayList;

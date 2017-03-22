@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Module 634.1-Programmation - Contrôle continu du 13.04.2016
+ * Module 634.1-Programmation - TP P02
  * 
  * Modélise la connexion à la base
  *
